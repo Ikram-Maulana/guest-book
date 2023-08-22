@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
 import { Inter } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -57,6 +58,7 @@ const MyApp = ({
             url: SiteMetadata.origin,
           }}
         />
+        <NextTopLoader color="#18181B" />
         <Component {...pageProps} />
       </SessionProvider>
     </>,
