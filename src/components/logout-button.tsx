@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { ExitIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { signOut } from "next-auth/react";
 import { useState, type FC } from "react";
@@ -38,11 +37,7 @@ const LogoutButton: FC = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="destructive"
-          disabled={isLoading}
-          className={cn("mt-2")}
-        >
+        <Button variant="destructive" disabled={isLoading}>
           {isLoading ? (
             <ReloadIcon className="mr-2 h-3 w-3 animate-spin" />
           ) : (
