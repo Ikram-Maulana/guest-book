@@ -1,5 +1,6 @@
 import AuthButton from "@/components/auth-button";
 import Layout from "@/components/layout";
+import MessageCard from "@/components/message-card";
 import MessageForm from "@/components/message-form";
 import {
   Card,
@@ -8,11 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
+import React from "react";
 
 export default function Home() {
   const { data: sessionData, status } = useSession();
@@ -44,7 +47,7 @@ export default function Home() {
         </p>
       </section>
 
-      <div className="container mx-auto w-full max-w-3xl">
+      <div className="container mx-auto w-full max-w-3xl pb-8">
         {status === "loading" && (
           <Skeleton className="h-[172px] w-full rounded-xl md:h-[152px]" />
         )}
@@ -64,13 +67,22 @@ export default function Home() {
         {status === "authenticated" && (
           <MessageForm fullName={sessionData.user.name!} />
         )}
+      </div>
 
+      <div className="container mx-auto w-full max-w-3xl">
         {isLoadingGuestBook && <p>Loading...</p>}
         {!isLoadingGuestBook && guestBook && guestBook?.length <= 0 && (
           <p>No messages yet.</p>
         )}
         {!isLoadingGuestBook && guestBook && guestBook?.length > 0 && (
-          <p>{JSON.stringify(guestBook, null, 2)}</p>
+          <div className="grid grid-cols-1 gap-4 pb-16 lg:pb-20">
+            {guestBook.map((message: MessageAuthorType) => (
+              <React.Fragment key={message.id}>
+                <MessageCard message={message} />
+                <Separator className="my-2 hidden [&:not(:last-child)]:block" />
+              </React.Fragment>
+            ))}
+          </div>
         )}
       </div>
     </>
