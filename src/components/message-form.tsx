@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
+import { api } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,6 +41,26 @@ const MessageForm = ({ fullName }: { fullName: string }) => {
       message: "",
     },
   });
+  const { refetch: refetchMessage } = api.message.getAll.useQuery();
+  const { mutate: addMessage, isLoading: isLoadingAddMessage } =
+    api.message.create.useMutation({
+      onError: async () => {
+        toast({
+          title: "Error",
+          description: "Failed to add message, please try again later.",
+          variant: "destructive",
+        });
+        await refetchMessage();
+      },
+      onSuccess: async () => {
+        form.reset();
+        toast({
+          title: "Success",
+          description: "Message added successfully.",
+        });
+        await refetchMessage();
+      },
+    });
 
   useEffect(() => {
     const charsCount = Number(form.watch("message").length);
@@ -52,9 +75,9 @@ const MessageForm = ({ fullName }: { fullName: string }) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    addMessage({
+      message: values.message,
+    });
   }
 
   return (
@@ -104,7 +127,12 @@ const MessageForm = ({ fullName }: { fullName: string }) => {
           </CardContent>
           <CardFooter className="flex items-center justify-end gap-2">
             <LogoutButton />
-            <Button type="submit">Add Message</Button>
+            <Button disabled={isLoadingAddMessage} type="submit">
+              {isLoadingAddMessage && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {isLoadingAddMessage ? "Loading..." : "AddMessage"}
+            </Button>
           </CardFooter>
         </form>
       </Form>
