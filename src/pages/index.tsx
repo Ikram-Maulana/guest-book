@@ -13,9 +13,16 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { api } from "@/utils/api";
+import { type Message, type User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import React from "react";
+
+interface MessageAuthorType {
+  message: Message & {
+    author: User;
+  };
+}
 
 export default function Home() {
   const { data: sessionData, status } = useSession();
@@ -76,8 +83,8 @@ export default function Home() {
         )}
         {!isLoadingGuestBook && guestBook && guestBook?.length > 0 && (
           <div className="grid grid-cols-1 gap-4 pb-16 lg:pb-20">
-            {guestBook.map((message: MessageAuthorType) => (
-              <React.Fragment key={message.id}>
+            {guestBook.map(({ message }: MessageAuthorType) => (
+              <React.Fragment key={`message-${message.id}`}>
                 <MessageCard message={message} />
                 <Separator className="my-2 hidden [&:not(:last-child)]:block" />
               </React.Fragment>
