@@ -1,4 +1,4 @@
-import { SiteMetadata } from "@/lib/metadata";
+import { SiteMetadata } from "@/data/metadata";
 import "@/styles/globals.css";
 import { api } from "@/utils/api";
 import type { NextPage } from "next";
