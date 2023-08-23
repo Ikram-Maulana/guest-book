@@ -61,4 +61,35 @@ export const messageRouter = createTRPCRouter({
 
       return newGuetsBook;
     }),
+
+  revalidate: publicProcedure.query(async () => {
+    const cachedGuestbook = await redis.lrange("guestbook", 0, -1);
+
+    await Promise.all([
+      cachedGuestbook.map((id) => redis.json.del(`guestbook:${id}`)),
+      redis.del("guestbook"),
+    ]);
+
+    const guestBook = await prisma.message.findMany({
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    await Promise.all([
+      ...guestBook.map((message) =>
+        redis.lpush("guestbook", message.id.toString()),
+      ),
+      ...guestBook.map((message) =>
+        redis.json.set(`guestbook:${message.id}`, "$", message),
+      ),
+    ]);
+
+    return "Guestbook successfully revalidated!";
+  }),
 });
