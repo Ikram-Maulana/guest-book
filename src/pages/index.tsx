@@ -2,6 +2,7 @@ import AuthButton from "@/components/auth-button";
 import Layout from "@/components/layout";
 import MessageCard from "@/components/message-card";
 import MessageForm from "@/components/message-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -12,17 +13,17 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
 import { type Message, type User } from "@prisma/client";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 import React from "react";
 
-interface MessageAuthorType {
-  message: Message & {
-    author: User;
-  };
-}
+type MessageAuthorType = Message & {
+  author: User;
+};
 
 export default function Home() {
   const { data: sessionData, status } = useSession();
@@ -77,13 +78,43 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto w-full max-w-3xl">
-        {isLoadingGuestBook && <p>Loading...</p>}
+        {isLoadingGuestBook && (
+          <div className="grid grid-cols-1 gap-4 pb-16 lg:pb-20">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <React.Fragment key={`skeleton-${i}`}>
+                <div>
+                  <div className="mb-4 flex flex-col gap-2">
+                    <Skeleton className="h-6 w-[138px]" />
+                    <Skeleton className="h-[14px] w-20" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-[26px] w-full" />
+                    <Skeleton className="h-[26px] w-full" />
+                  </div>
+                </div>
+                <Separator className="my-2 hidden [&:not(:last-child)]:block" />
+              </React.Fragment>
+            ))}
+          </div>
+        )}
         {!isLoadingGuestBook && guestBook && guestBook?.length <= 0 && (
-          <p>No messages yet.</p>
+          <div className="pb-16 lg:pb-20">
+            <Alert
+              className={cn(
+                "border-amber-500/50 text-amber-500 dark:border-amber-500 [&>svg]:text-amber-500",
+              )}
+            >
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>Warning</AlertTitle>
+              <AlertDescription>
+                Guestbook data is empty, please add some data.
+              </AlertDescription>
+            </Alert>
+          </div>
         )}
         {!isLoadingGuestBook && guestBook && guestBook?.length > 0 && (
           <div className="grid grid-cols-1 gap-4 pb-16 lg:pb-20">
-            {guestBook.map(({ message }: MessageAuthorType) => (
+            {guestBook.map((message: MessageAuthorType) => (
               <React.Fragment key={`message-${message.id}`}>
                 <MessageCard message={message} />
                 <Separator className="my-2 hidden [&:not(:last-child)]:block" />
