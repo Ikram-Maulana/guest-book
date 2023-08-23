@@ -17,7 +17,7 @@ const Navbar: FC = () => {
   return (
     <header id="header" className="mx-auto w-full flex-none">
       <div className="container mx-auto flex w-full max-w-3xl items-center justify-between py-6">
-        <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-center justify-between md:block">
           <Link href="/">
             <Image
               priority
