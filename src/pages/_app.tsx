@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import { SiteMetadata } from "@/data/metadata";
 import "@/styles/globals.css";
 import { api } from "@/utils/api";
@@ -59,6 +60,7 @@ const MyApp = ({
           }}
         />
         <NextTopLoader color="#18181B" />
+        <Toaster />
         <Component {...pageProps} />
       </SessionProvider>
     </>,

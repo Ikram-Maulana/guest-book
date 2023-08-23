@@ -9,11 +9,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
+import { api } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
 
 export default function Home() {
   const { data: sessionData, status } = useSession();
+  const { data: guestBook, isLoading: isLoadingGuestBook } =
+    api.message.getAll.useQuery(undefined, {
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to get guest book, please try again later.",
+          variant: "destructive",
+        });
+      },
+    });
+
   return (
     <>
       <NextSeo title="Home" />
@@ -50,6 +63,14 @@ export default function Home() {
         )}
         {status === "authenticated" && (
           <MessageForm fullName={sessionData.user.name!} />
+        )}
+
+        {isLoadingGuestBook && <p>Loading...</p>}
+        {!isLoadingGuestBook && guestBook && guestBook?.length <= 0 && (
+          <p>No messages yet.</p>
+        )}
+        {!isLoadingGuestBook && guestBook && guestBook?.length > 0 && (
+          <p>{JSON.stringify(guestBook, null, 2)}</p>
         )}
       </div>
     </>
