@@ -73,6 +73,28 @@ export const messageRouter = createTRPCRouter({
       return newGuetsBook;
     }),
 
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const deletedGuestbook = await prisma.message.delete({
+        where: {
+          id: input.id,
+          authorId: ctx.session.user.id,
+        },
+      });
+
+      await Promise.all([
+        redis.lrem("guestbook", 0, input.id.toString()),
+        redis.json.del(`guestbook:${input.id}`),
+      ]);
+
+      return deletedGuestbook;
+    }),
+
   revalidate: publicProcedure.query(async () => {
     const cachedGuestbook = await redis.lrange("guestbook", 0, -1);
 
