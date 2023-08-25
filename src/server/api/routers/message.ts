@@ -26,6 +26,9 @@ export const messageRouter = createTRPCRouter({
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
     await Promise.all([
@@ -51,6 +54,14 @@ export const messageRouter = createTRPCRouter({
         data: {
           content: input.message,
           authorId: ctx.session.user.id,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       });
 
