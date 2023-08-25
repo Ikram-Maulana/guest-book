@@ -126,7 +126,7 @@ const MessageForm = ({ fullName }: { fullName: string }) => {
             />
           </CardContent>
           <CardFooter className="flex items-center justify-end gap-2">
-            <LogoutButton />
+            <LogoutButton isLoadingAddMessage={isLoadingAddMessage} />
             <Button disabled={isLoadingAddMessage} type="submit">
               {isLoadingAddMessage && (
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
