@@ -14,9 +14,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { ExitIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { signOut } from "next-auth/react";
-import { useState, type FC } from "react";
+import { useState } from "react";
 
-const LogoutButton: FC = () => {
+const LogoutButton = ({
+  isLoadingAddMessage,
+}: {
+  isLoadingAddMessage: boolean;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const logoutHandler = async () => {
@@ -37,7 +41,10 @@ const LogoutButton: FC = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" disabled={isLoading}>
+        <Button
+          variant="destructive"
+          disabled={isLoadingAddMessage || isLoading}
+        >
           {isLoading ? (
             <ReloadIcon className="mr-2 h-3 w-3 animate-spin" />
           ) : (
