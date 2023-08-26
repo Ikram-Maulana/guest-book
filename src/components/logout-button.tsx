@@ -12,12 +12,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import { ExitIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { signOut } from "next-auth/react";
-import { useState, type FC } from "react";
+import { useState } from "react";
 
-const LogoutButton: FC = () => {
+const LogoutButton = ({
+  isLoadingAddMessage,
+}: {
+  isLoadingAddMessage: boolean;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const logoutHandler = async () => {
@@ -40,8 +43,7 @@ const LogoutButton: FC = () => {
       <AlertDialogTrigger asChild>
         <Button
           variant="destructive"
-          disabled={isLoading}
-          className={cn("mt-2")}
+          disabled={isLoadingAddMessage || isLoading}
         >
           {isLoading ? (
             <ReloadIcon className="mr-2 h-3 w-3 animate-spin" />
