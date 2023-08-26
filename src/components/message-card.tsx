@@ -4,8 +4,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "@/components/ui/use-toast";
 import { api } from "@/utils/api";
-import { type Message, type User } from "@prisma/client";
+import { type Message } from "@prisma/client";
 import {
   DotsVerticalIcon,
   GitHubLogoIcon,
@@ -14,17 +15,21 @@ import {
 import moment from "moment";
 import { useSession } from "next-auth/react";
 import { type FC } from "react";
-import { toast } from "@/components/ui/use-toast";
 
 interface MessageCardProps {
   message: Message & {
-    author: User;
+    author: {
+      name: string | null;
+      id: string;
+    };
   };
 }
 
 const MessageCard: FC<MessageCardProps> = ({ message }) => {
   const { data: sessionData } = useSession();
-  const { refetch: refetchMessage } = api.message.getAll.useQuery();
+  const { refetch: refetchMessage } = api.message.getAll.useInfiniteQuery({
+    limit: 2,
+  });
   const { mutate: deleteMessage, isLoading: isLoadingDeleteMessage } =
     api.message.delete.useMutation({
       onError: async () => {
