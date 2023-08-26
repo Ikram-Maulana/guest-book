@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import AuthButton from "@/components/auth-button";
 import Layout from "@/components/layout";
 import MessageCard from "@/components/message-card";
@@ -16,20 +16,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { api } from "@/utils/api";
-import { type Message, type User } from "@prisma/client";
+import { type Message } from "@prisma/client";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import { NextSeo } from "next-seo";
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { useIntersectionObserver } from "usehooks-ts";
 
 type MessageAuthorType = Message & {
-  author: User;
+  author: {
+    name: string | null;
+    id: string;
+  };
 };
 
 export default function Home() {
   const { data: sessionData, status } = useSession();
-  const { data: guestBook, isLoading: isLoadingGuestBook } =
-    api.message.getAll.useQuery(undefined, {
+  const {
+    data: guestBook,
+    isLoading: isLoadingGuestBook,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.message.getAll.useInfiniteQuery(
+    {
+      limit: 2,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
       onError: () => {
         toast({
           title: "Error",
@@ -37,7 +50,19 @@ export default function Home() {
           variant: "destructive",
         });
       },
-    });
+    },
+  );
+
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const loadMoreEntry = useIntersectionObserver(lastMessageRef, {});
+
+  useEffect(() => {
+    if (loadMoreEntry?.isIntersecting) {
+      void fetchNextPage();
+    }
+  }, [loadMoreEntry, fetchNextPage]);
+
+  const _guestBook = guestBook?.pages.flatMap(({ data }) => data);
 
   return (
     <>
@@ -98,7 +123,7 @@ export default function Home() {
             ))}
           </div>
         )}
-        {!isLoadingGuestBook && guestBook && guestBook?.length <= 0 && (
+        {!isLoadingGuestBook && _guestBook && _guestBook.length <= 0 && (
           <div className="pb-16 lg:pb-20">
             <Alert
               className={cn(
@@ -113,14 +138,25 @@ export default function Home() {
             </Alert>
           </div>
         )}
-        {!isLoadingGuestBook && guestBook && guestBook?.length > 0 && (
+        {!isLoadingGuestBook && _guestBook && _guestBook?.length > 0 && (
           <div className="grid grid-cols-1 gap-4 pb-16 lg:pb-20">
-            {guestBook.map((message: MessageAuthorType) => (
-              <React.Fragment key={`message-${message.id}`}>
-                <MessageCard message={message} />
-                <Separator className="my-2 hidden [&:not(:last-child)]:block" />
-              </React.Fragment>
-            ))}
+            {_guestBook.map((message: MessageAuthorType) => {
+              return (
+                <React.Fragment key={message.id}>
+                  <MessageCard message={message} />
+                  <Separator className="my-2" />
+                  <div ref={lastMessageRef} style={{ height: "1px" }} />
+                </React.Fragment>
+              );
+            })}
+
+            {isFetchingNextPage && (
+              <div className="flex justify-center">
+                <p className="text-sm font-medium leading-none text-muted-foreground">
+                  Loading...
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
