@@ -1,28 +1,66 @@
-# Create T3 App
+# Guestbook App
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+The guestbook app is a simple web application that allows you to create and view guestbook entries. This project bootstraped with [T3 App](https://create.t3.gg/) and implemented caching with [Redis](https://redis.io/).
 
-## What's next? How do I make an app with this?
+Live example hosted on Vercel: https://guestbook-ikrammaulana.vercel.app
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+![Guestbook](public/guestbookapp.png)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 🔑 Getting Github Client ID and Secret
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+To get your Github Client ID and Secret, you need to create a Github OAuth app. You can follow the steps from [this guide](https://scribehow.com/shared/Getting_Github_Client_ID_and_Secret__KEf9Rk1FQtOzi5CaVFJxyA). then add your `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` to your `.env` file. Make sure to make separate Github Client ID and Secret for development and production environment.
 
-## Learn More
+## 📦 Getting Redis REST URL and Token
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+To get your Redis REST URL and Token, you can make a free account on [Upstash](https://console.upstash.com/). Then add your `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` to your `.env` file.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## 🖥️ Running Locally
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+1. Clone this repository
 
-## How do I deploy this?
+   ```bash
+   git clone https://github.com/Ikram-Maulana/guest-book.git
+   ```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+2. Install dependencies
+
+   ```bash
+   cd guest-book
+   pnpm install
+   ```
+
+3. Add your environment variables to your `.env` file in the root of your project
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Start the development server
+
+   ```bash
+   pnpm dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result
+
+## 🚀 Deploy on Vercel
+
+1. Fork this repository
+
+2. Create new project on [Vercel](https://vercel.com/)
+
+3. Connect your repository to Vercel
+
+4. Add your environment variables to your Vercel project
+
+   ```bash
+   DATABASE_URL=
+   NEXTAUTH_SECRET=
+   GITHUB_CLIENT_ID=
+   GITHUB_CLIENT_SECRET=
+   NEXT_PUBLIC_PORTFOLIO_URL=
+   UPSTASH_REDIS_REST_URL=
+   UPSTASH_REDIS_REST_TOKEN=
+   ```
+
+5. Deploy your project

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import AuthButton from "@/components/auth-button";
 import Layout from "@/components/layout";
 import MessageCard from "@/components/message-card";
