@@ -41,7 +41,9 @@ const MessageForm = ({ fullName }: { fullName: string }) => {
       message: "",
     },
   });
-  const { refetch: refetchMessage } = api.message.getAll.useQuery();
+  const { refetch: refetchMessage } = api.message.getAll.useInfiniteQuery({
+    limit: 2,
+  });
   const { mutate: addMessage, isLoading: isLoadingAddMessage } =
     api.message.create.useMutation({
       onError: async () => {
